@@ -1,18 +1,21 @@
 import numpy as np
 import tensorflow as tf
 
-with open('/content/drive/MyDrive/gandhiji writings.text', 'r') as file:
+# Load and preprocess the text file
+# Replace 'path_to_textfile' with the actual path to your text file
+with open('/content/gandhiji writings.text', 'r') as file:
     text = file.read()
 
+# Split the text into words
 words = text.split()
 
-
+# Create a mapping from unique words to integers
 unique_words = sorted(list(set(words)))
 word_to_int = {word: i for i, word in enumerate(unique_words)}
 int_to_word = {i: word for i, word in enumerate(unique_words)}
 num_words = len(unique_words)
 
-
+# Generate input and target sequences
 seq_length = 9  # Length of input sequences (in words)
 step = 1  # Step size for sequence generation
 input_sequences = []
@@ -23,22 +26,24 @@ for i in range(0, len(words) - seq_length, step):
     input_sequences.append([word_to_int.get(word, 0) for word in input_seq])
     target_sequences.append(word_to_int.get(target_seq, 0))
 
+# Convert input and target sequences to numpy arrays
 X = np.array(input_sequences)
 y = np.array(target_sequences)
 
-
+# Create an LSTM model
 model = tf.keras.Sequential([
     tf.keras.layers.Embedding(num_words, 256, input_length=seq_length),
     tf.keras.layers.LSTM(256),
     tf.keras.layers.Dense(num_words, activation='softmax')
 ])
 
-
+# Compile the model
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam')
 
-
+# Train the model
 model.fit(X, y, batch_size=128, epochs=50)
 
+# Function to generate text based on a given seed sequence
 def generate_text(seed, length):
     generated = seed
     for _ in range(length):
@@ -51,6 +56,7 @@ def generate_text(seed, length):
         seed = ' '.join(seed.split()[1:]) + " " + result
     return generated
 
+# Generate text based on a prompt
 prompt = "In a gentle way, you can shake the world."
 generated_text = generate_text(prompt, 100)
 print(generated_text)
