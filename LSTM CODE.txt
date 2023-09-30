@@ -3,7 +3,7 @@ import tensorflow as tf
 
 # Load and preprocess the text file
 # Replace 'path_to_textfile' with the actual path to your text file
-with open('/content/gandhiji writings.text', 'r') as file:
+with open('/content/drive/MyDrive/gandhiji writings (2).text', 'r') as file:
     text = file.read()
 
 # Split the text into words
@@ -42,21 +42,3 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam')
 
 # Train the model
 model.fit(X, y, batch_size=128, epochs=50)
-
-# Function to generate text based on a given seed sequence
-def generate_text(seed, length):
-    generated = seed
-    for _ in range(length):
-        x = np.array([word_to_int.get(word, 0) for word in seed.split()])
-        x = np.reshape(x, (1, len(seed.split())))
-        prediction = model.predict(x)
-        index = np.argmax(prediction)
-        result = int_to_word.get(index, '')
-        generated += " " + result
-        seed = ' '.join(seed.split()[1:]) + " " + result
-    return generated
-
-# Generate text based on a prompt
-prompt = "In a gentle way, you can shake the world."
-generated_text = generate_text(prompt, 100)
-print(generated_text)
